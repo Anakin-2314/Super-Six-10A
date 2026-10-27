@@ -1,0 +1,455 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<meta name="theme-color" content="#2e7f78">
+<title>Super Six</title>
+<link rel="icon" type="image/png" href="/icon-192.png">
+<link rel="apple-touch-icon" href="/icon-192.png">
+<link rel="manifest" href="/manifest.webmanifest">
+<style>
+  :root{--bg:#071c1b;--panel:#0c2827;--line:#17403d;--fg:#eaf3ef;--dim:#7fa39d;--acc:#e2bd72;--me:#134340;--warn:#ffb454;--ink:#2a1d05}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.5 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;height:100dvh;display:flex;flex-direction:column}
+  header{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 14px;border-bottom:1px solid var(--line);background:var(--panel)}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:700;letter-spacing:.2em;color:var(--acc)}
+  .brand img{width:34px;height:34px;border-radius:8px}
+  .hr{display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+  .pill{font-size:12px;color:var(--dim);border:1px solid var(--line);border-radius:99px;padding:2px 10px}
+  .hide{display:none!important}
+  button{background:var(--acc);color:var(--ink);border:0;border-radius:8px;padding:10px 18px;font:inherit;font-weight:700;cursor:pointer}
+  button.sm{padding:3px 10px;font-size:12px}
+  button.ghost{background:transparent;color:var(--fg);border:1px solid var(--line)}
+  button.ib{background:transparent;color:var(--fg);border:1px solid var(--line);padding:8px 10px;font-weight:400}
+  button.ib:hover{border-color:var(--acc)}
+  button.red{background:#ff5d5d;color:#2a0505}
+  input,select{background:var(--bg);color:var(--fg);border:1px solid var(--line);border-radius:8px;padding:10px 12px;font:inherit;outline:none;width:100%}
+  input:focus,select:focus{border-color:var(--acc)}
+  #login{margin:auto;max-width:400px;padding:24px;text-align:center;display:flex;flex-direction:column;gap:12px}
+  #login img{width:220px;max-width:70%;border-radius:16px;margin:0 auto}
+  #login p{color:var(--dim);margin:0;font-size:13px} #err{color:var(--warn);min-height:20px;font-size:13px}
+  #app{flex:1;min-height:0;display:flex;position:relative}
+  #side{width:210px;border-right:1px solid var(--line);background:var(--panel);overflow-y:auto;flex-shrink:0}
+  #side h4{margin:12px 14px 4px;font-size:11px;color:var(--dim);letter-spacing:.15em}
+  .c{display:flex;align-items:center;gap:8px;padding:9px 14px;cursor:pointer;border-left:3px solid transparent}
+  .c:hover{background:#10312f} .c.on{background:#15403d;border-left-color:var(--acc)}
+  .dot{width:8px;height:8px;border-radius:50%;background:#3a5a57} .dot.on{background:#5dff9a}
+  .badge2{margin-left:auto;background:var(--acc);color:var(--ink);border-radius:99px;font-size:11px;padding:0 7px;font-weight:700}
+  #pane{flex:1;min-width:0;display:flex;flex-direction:column}
+  #title{padding:8px 14px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+  #title small{color:var(--dim)}
+  #log{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:8px}
+  .m{max-width:78%;padding:8px 12px;border-radius:10px;background:var(--panel);border:1px solid var(--line);word-wrap:break-word;white-space:pre-wrap}
+  .m.me{align-self:flex-end;background:var(--me);border-color:#1f5d58}
+  .m .n{font-size:11px;color:var(--acc);display:block}
+  .m img{max-width:100%;max-height:300px;border-radius:8px;display:block}
+  .m audio{max-width:100%;height:36px}
+  .m.st{background:none;border:0;padding:0}
+  .emo{font-size:64px;line-height:1.1} .stb{border:2px solid var(--acc);color:var(--acc);padding:6px 14px;border-radius:10px;font-weight:700;letter-spacing:.15em;transform:rotate(-3deg);display:inline-block}
+  .file{display:flex;gap:10px;align-items:center} .file .ic{font-size:26px} .file a{color:var(--acc)} .file small{color:var(--dim);display:block}
+  .sys{align-self:center;color:var(--dim);font-size:12px;text-align:center}
+  #f{display:flex;gap:6px;padding:10px;border-top:1px solid var(--line);background:var(--panel);align-items:center}
+  #f input[type=text]{flex:1;min-width:0}
+  #stk{position:absolute;left:10px;bottom:64px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px;width:min(340px,92vw);max-height:260px;overflow-y:auto;z-index:5}
+  #stk .g{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:8px}
+  #stk .g button{background:transparent;font-size:28px;padding:4px;border:1px solid transparent;color:var(--acc)} #stk .g button:hover{border-color:var(--acc)}
+  #stk .g.b{grid-template-columns:repeat(3,1fr)} #stk .g.b button{font-size:13px;letter-spacing:.1em;border:1px solid var(--line)}
+  #idf,#gd{padding:10px 14px;border-bottom:1px solid var(--line);background:var(--panel);display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  #gd input,#gd select{width:auto;flex:1;min-width:120px}
+  #call{position:fixed;inset:0;background:#031110;z-index:20;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px}
+  #rv{max-width:96vw;max-height:70vh;background:#000;border-radius:12px} #lv{position:absolute;right:16px;top:16px;width:120px;border-radius:10px;background:#000}
+  #cname{font-size:22px;color:var(--acc);letter-spacing:.2em}
+  #inc{position:fixed;left:50%;top:14px;transform:translateX(-50%);background:var(--panel);border:1px solid var(--acc);border-radius:12px;padding:12px 16px;z-index:30;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  #burned{margin:auto;text-align:center;padding:24px;max-width:420px} #burned h1{color:var(--warn)}
+  @media(max-width:640px){#app{flex-direction:column}#side{width:100%;display:flex;overflow-x:auto;border-right:0;border-bottom:1px solid var(--line)}#side h4{display:none}.c{white-space:nowrap;border-left:0;border-bottom:3px solid transparent}.c.on{border-bottom-color:var(--acc)}#stk{bottom:60px}}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand"><img src="/icon-192.png" alt="Super Six"><span>SUPER SIX</span></div>
+  <div class="hr">
+    <span class="pill">🔒 End-to-end encrypted</span>
+    <span class="pill hide" id="who"></span>
+    <button class="ghost sm hide" id="gl">➕ Guest link</button>
+    <button class="ghost sm hide" id="chg">Change ID</button>
+    <button class="red sm hide" id="burn">🔥 Burn room</button>
+  </div>
+</header>
+
+<form id="idf" class="hide" autocomplete="off">
+  <input id="newid" placeholder="New personal ID (6-40 chars)" autocapitalize="characters" style="flex:1">
+  <button>Save</button><span id="iderr" style="color:var(--warn);font-size:13px"></span>
+</form>
+
+<div id="gd" class="hide">
+  <span style="color:var(--dim);font-size:13px">Burns after</span>
+  <select id="gttl"><option value="15">15 minutes</option><option value="60" selected>1 hour</option><option value="240">4 hours</option><option value="1440">24 hours</option></select>
+  <select id="gmax"><option value="2">2 people</option><option value="4">4 people</option><option value="6" selected>6 people</option><option value="8">8 people</option></select>
+  <button id="gmk">Create link</button>
+  <div style="width:100%" id="gout" class="hide">
+    <input id="glink" readonly>
+    <div style="margin-top:6px;display:flex;gap:8px;flex-wrap:wrap"><button class="sm" id="gcopy">Copy</button><button class="ghost sm" id="gopen">Open it</button><span id="gnote" style="color:var(--dim);font-size:12px"></span></div>
+  </div>
+  <span id="gerr" style="color:var(--warn);font-size:13px"></span>
+</div>
+
+<form id="login" autocomplete="off">
+  <img src="/logo.jpg" alt="Super Six — the chaos never ends">
+  <p id="lp">Members only. Enter your personal ID.</p>
+  <input id="mid" placeholder="Your personal ID" autocapitalize="characters" required>
+  <input id="rk" placeholder="Room key (filled automatically from the invite link)" type="password">
+  <button id="lb">Enter</button>
+  <div id="err"></div>
+</form>
+
+<div id="app" class="hide">
+  <nav id="side"></nav>
+  <section id="pane">
+    <div id="title">
+      <div><b id="tname"></b><br><small id="tinfo"></small></div>
+      <div id="tcall" class="hide"><button class="ib" id="calla" title="Voice call">📞</button> <button class="ib" id="callv" title="Video call">🎥</button></div>
+    </div>
+    <div id="log"></div>
+    <div id="stk" class="hide"></div>
+    <form id="f" autocomplete="off">
+      <button type="button" class="ib" id="att" title="Send a document or file">📎</button>
+      <button type="button" class="ib" id="gifb" title="Send a GIF or image">GIF</button>
+      <button type="button" class="ib" id="stb" title="Stickers">😀</button>
+      <button type="button" class="ib hide" id="mcancel" title="Cancel recording">✕</button>
+      <button type="button" class="ib" id="mic" title="Record a voice message">🎤</button>
+      <input id="msg" type="text" placeholder="Type an encrypted message…" maxlength="2000">
+      <button>Send</button>
+    </form>
+    <input type="file" id="fi" class="hide">
+    <input type="file" id="gi" class="hide" accept="image/gif,image/webp,image/png,image/jpeg">
+  </section>
+</div>
+
+<div id="burned" class="hide"><h1 id="bh">🔥 Burned</h1><p id="bmsg"></p><button onclick="location.href='/'">Close</button></div>
+
+<div id="inc" class="hide"><span id="inctext"></span><button id="cacc" class="sm">Accept</button><button id="cdec" class="red sm">Decline</button></div>
+<div id="call" class="hide">
+  <div id="cname"></div><div id="cstat" style="color:var(--dim)"></div>
+  <video id="rv" autoplay playsinline></video><video id="lv" autoplay playsinline muted></video>
+  <div style="display:flex;gap:10px"><button class="ghost" id="cmute">🎙 Mute</button><button class="ghost" id="ccam">📷 Camera</button><button class="red" id="cend">Hang up</button></div>
+</div>
+
+<script>
+(() => {
+const $ = id => document.getElementById(id);
+const enc = new TextEncoder(), dec = new TextDecoder();
+function b64(buf) { const u = new Uint8Array(buf); let s = ''; for (let i = 0; i < u.length; i += 0x8000) s += String.fromCharCode.apply(null, u.subarray(i, i + 0x8000)); return btoa(s); }
+function unb64(s) { const bin = atob(s), u = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i); return u; }
+const b64url = buf => b64(buf).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+const MAX_FILE = 4 * 1024 * 1024;
+
+const gm = location.pathname.match(/^\/g\/([A-Za-z0-9]{8,32})$/);
+const GUEST = !!gm, ROOM = gm ? gm[1].toUpperCase() : null;
+const SK = 'ss-key:' + location.pathname;
+let savedKey = ''; try { savedKey = sessionStorage.getItem(SK) || ''; } catch {}
+$('rk').value = location.hash.slice(1) || savedKey;
+history.replaceState(null, '', location.pathname); // keep the key out of the address bar and history
+if ($('rk').value) $('rk').classList.add('hide');
+if (GUEST) {
+  $('lp').textContent = 'Choose a nickname to join this private room. It burns on its own, and anyone inside can burn it right now.';
+  $('mid').placeholder = 'Nickname'; $('mid').autocapitalize = 'words'; $('mid').maxLength = 16; $('lb').textContent = 'Join room';
+}
+
+let ws, me, groupKey, kp, myPub, roster = [], cur = 'ALL', retry = 0, creds = null, ice = [], expiresAt = null, call = null, rec = null;
+let threads = { ALL: [] }, unread = {}, blobUrls = [];
+const dmKeys = new Map();
+const ALL_LABEL = () => GUEST ? '# Room' : '# Everyone';
+
+// ---------- crypto ----------
+async function deriveGroupKey(secret) {
+  const base = await crypto.subtle.importKey('raw', enc.encode(secret), 'PBKDF2', false, ['deriveKey']);
+  return crypto.subtle.deriveKey({ name:'PBKDF2', salt: enc.encode('supersix:group'), iterations: 200000, hash:'SHA-256' },
+    base, { name:'AES-GCM', length:256 }, false, ['encrypt','decrypt']);
+}
+async function genPair() {
+  kp = await crypto.subtle.generateKey({ name:'ECDH', namedCurve:'P-256' }, false, ['deriveKey']);
+  myPub = b64(await crypto.subtle.exportKey('raw', kp.publicKey));
+}
+async function dmKey(peerPub) {
+  if (dmKeys.has(peerPub)) return dmKeys.get(peerPub);
+  const pk = await crypto.subtle.importKey('raw', unb64(peerPub), { name:'ECDH', namedCurve:'P-256' }, false, []);
+  const k = await crypto.subtle.deriveKey({ name:'ECDH', public: pk }, kp.privateKey, { name:'AES-GCM', length:256 }, false, ['encrypt','decrypt']);
+  dmKeys.set(peerPub, k); return k;
+}
+async function seal(key, text) {
+  const iv = crypto.getRandomValues(new Uint8Array(12));
+  const ct = await crypto.subtle.encrypt({ name:'AES-GCM', iv }, key, enc.encode(text));
+  return { iv: b64(iv), ct: b64(ct) };
+}
+const open = async (key, m) => dec.decode(await crypto.subtle.decrypt({ name:'AES-GCM', iv: unb64(m.iv) }, key, unb64(m.ct)));
+async function fingerprint(a, b) {
+  const h = await crypto.subtle.digest('SHA-256', enc.encode([a, b].sort().join('|')));
+  return [...new Uint8Array(h).slice(0, 4)].map(x => x.toString(16).padStart(2,'0')).join(' ').toUpperCase();
+}
+
+// ---------- rendering ----------
+const fmtSize = n => n > 1048576 ? (n / 1048576).toFixed(1) + ' MB' : Math.max(1, Math.round(n / 1024)) + ' KB';
+const IMG = /^image\/(png|jpeg|gif|webp)$/;
+function blobUrl(b64s, mime) { const u = URL.createObjectURL(new Blob([unb64(b64s)], { type: mime })); blobUrls.push(u); return u; }
+function bubble(o) {
+  const d = document.createElement('div');
+  if (o.sys) { d.className = 'sys'; d.textContent = o.text; return d; }
+  const e = o.env || {};
+  d.className = 'm' + (o.mine ? ' me' : '') + (e.t === 'sticker' ? ' st' : '');
+  if (!o.mine && cur === 'ALL') { const n = document.createElement('span'); n.className = 'n'; n.textContent = o.from; d.appendChild(n); }
+  if (e.t === 'text') d.appendChild(document.createTextNode(String(e.text || '')));
+  else if (e.t === 'sticker') { const s = document.createElement('div'); s.className = e.badge ? 'stb' : 'emo'; s.textContent = String(e.badge || e.v || ''); d.appendChild(s); }
+  else if (e.t === 'voice' && /^audio\//.test(e.mime || '')) {
+    const a = document.createElement('audio'); a.controls = true; a.src = blobUrl(e.data, e.mime); d.appendChild(a);
+    if (e.dur) { const s = document.createElement('small'); s.style.color = 'var(--dim)'; s.textContent = ' 🎤 ' + e.dur + 's'; d.appendChild(s); }
+  } else if (e.t === 'file') {
+    const name = String(e.name || 'file').replace(/[\\/:*?"<>|]/g, '_').slice(0, 80);
+    if (IMG.test(e.mime || '')) { const im = document.createElement('img'); im.alt = name; im.src = blobUrl(e.data, e.mime); d.appendChild(im); }
+    else {
+      const w = document.createElement('div'); w.className = 'file';
+      const ic = document.createElement('span'); ic.className = 'ic'; ic.textContent = '📄';
+      const box = document.createElement('div'); const a = document.createElement('a'); a.textContent = name; a.href = blobUrl(e.data, 'application/octet-stream'); a.download = name;
+      const sz = document.createElement('small'); sz.textContent = fmtSize(Math.floor((e.data || '').length * 0.75));
+      box.append(a, sz); w.append(ic, box); d.appendChild(w);
+    }
+  } else d.textContent = '(unsupported message)';
+  return d;
+}
+function draw(o) { const el = bubble(o); $('log').appendChild(el); $('log').scrollTop = $('log').scrollHeight; }
+function push(key, o) {
+  (threads[key] ||= []).push(o);
+  if (key === cur) draw(o); else unread[key] = (unread[key] || 0) + 1;
+  renderSide();
+}
+const note = t => push(cur, { sys:true, text:t });
+function renderSide() {
+  const s = $('side'); s.textContent = '';
+  const mk = (key, label, on) => {
+    const c = document.createElement('div'); c.className = 'c' + (key === cur ? ' on' : '');
+    const dot = document.createElement('span'); dot.className = 'dot' + (on ? ' on' : ''); c.appendChild(dot);
+    c.appendChild(document.createTextNode(label));
+    if (unread[key]) { const b = document.createElement('span'); b.className = 'badge2'; b.textContent = unread[key]; c.appendChild(b); }
+    c.onclick = () => select(key); s.appendChild(c);
+  };
+  const h1 = document.createElement('h4'); h1.textContent = 'GROUP'; s.appendChild(h1);
+  mk('ALL', ALL_LABEL(), true);
+  const h2 = document.createElement('h4'); h2.textContent = 'PRIVATE'; s.appendChild(h2);
+  for (const r of roster) if (r.name !== me) mk(r.name, r.name, r.online);
+}
+function expiryText() { if (!expiresAt) return ''; const m = Math.max(0, Math.round((expiresAt - Date.now()) / 60000)); return 'Burns automatically in ' + (m >= 60 ? Math.floor(m / 60) + 'h ' + (m % 60) + 'm' : m + ' min'); }
+async function select(key) {
+  cur = key; unread[key] = 0; $('log').textContent = ''; $('stk').classList.add('hide');
+  (threads[key] || []).forEach(draw);
+  $('tname').textContent = key === 'ALL' ? ALL_LABEL() : '🔒 ' + key;
+  $('tcall').classList.toggle('hide', key === 'ALL');
+  if (key === 'ALL') $('tinfo').textContent = GUEST ? 'Everyone with the link · ' + expiryText() : 'Visible to all 6 members';
+  else {
+    const r = roster.find(x => x.name === key);
+    $('tinfo').textContent = r && r.pub ? 'Only you and ' + key + ' · verify code: ' + await fingerprint(myPub, r.pub) : key + ' is offline';
+  }
+  renderSide(); $('msg').focus();
+}
+setInterval(() => { if (GUEST && cur === 'ALL' && me) $('tinfo').textContent = 'Everyone with the link · ' + expiryText(); }, 30000);
+
+// ---------- sending ----------
+async function sendEnv(env) {
+  if (!ws || ws.readyState !== 1) return;
+  const text = JSON.stringify(env);
+  if (cur === 'ALL') ws.send(JSON.stringify({ type:'group', ...(await seal(groupKey, text)) }));
+  else {
+    const r = roster.find(x => x.name === cur);
+    if (!r || !r.online || !r.pub) return note(cur + ' is offline.');
+    ws.send(JSON.stringify({ type:'dm', to: cur, ...(await seal(await dmKey(r.pub), text)) }));
+  }
+  push(cur, { mine:true, env });
+}
+async function sendFile(file) {
+  if (!file) return;
+  if (file.size > MAX_FILE) return note('File too large (max 4 MB).');
+  sendEnv({ t:'file', name: file.name, mime: file.type || 'application/octet-stream', data: b64(await file.arrayBuffer()) });
+}
+$('f').onsubmit = e => { e.preventDefault(); const t = $('msg').value.trim(); if (!t) return; sendEnv({ t:'text', text:t }); $('msg').value = ''; };
+$('att').onclick = () => $('fi').click(); $('gifb').onclick = () => $('gi').click();
+$('fi').onchange = () => { sendFile($('fi').files[0]); $('fi').value = ''; };
+$('gi').onchange = () => { sendFile($('gi').files[0]); $('gi').value = ''; };
+
+// stickers
+const EMO = ['😂','🔥','💀','😎','🥳','😭','🤯','😴','🫡','👀','💯','❤️','🙌','🤝','🍿','⚡','🎉','🤡','🧠','☕'];
+const BADGES = ['CHAOS','SUPER SIX','LOL','BRB','GG','OK'];
+(() => {
+  const g1 = document.createElement('div'); g1.className = 'g';
+  EMO.forEach(v => { const b = document.createElement('button'); b.type = 'button'; b.textContent = v; b.onclick = () => { sendEnv({ t:'sticker', v }); $('stk').classList.add('hide'); }; g1.appendChild(b); });
+  const g2 = document.createElement('div'); g2.className = 'g b';
+  BADGES.forEach(v => { const b = document.createElement('button'); b.type = 'button'; b.textContent = v; b.onclick = () => { sendEnv({ t:'sticker', badge:v }); $('stk').classList.add('hide'); }; g2.appendChild(b); });
+  $('stk').append(g1, g2);
+})();
+$('stb').onclick = () => $('stk').classList.toggle('hide');
+
+// voice messages
+$('mic').onclick = async () => {
+  if (rec) { rec.send = true; rec.mr.stop(); return; }
+  try {
+    const st = await navigator.mediaDevices.getUserMedia({ audio:true });
+    const mt = ['audio/webm;codecs=opus','audio/webm','audio/mp4','audio/ogg'].find(t => window.MediaRecorder && MediaRecorder.isTypeSupported(t)) || '';
+    const mr = new MediaRecorder(st, mt ? { mimeType: mt } : {}), chunks = [], t0 = Date.now();
+    const r = rec = { mr, send:false };
+    mr.ondataavailable = e => e.data.size && chunks.push(e.data);
+    mr.onstop = async () => {
+      st.getTracks().forEach(t => t.stop()); clearTimeout(r.t); rec = null;
+      $('mic').textContent = '🎤'; $('mic').classList.remove('red'); $('mcancel').classList.add('hide');
+      if (!r.send) return;
+      const blob = new Blob(chunks, { type: mr.mimeType || 'audio/webm' });
+      if (blob.size > MAX_FILE) return note('Voice message too long.');
+      sendEnv({ t:'voice', mime: mr.mimeType || 'audio/webm', dur: Math.round((Date.now() - t0) / 1000), data: b64(await blob.arrayBuffer()) });
+    };
+    mr.start(); r.t = setTimeout(() => { r.send = true; mr.stop(); }, 120000);
+    $('mic').textContent = '■ Send'; $('mic').classList.add('red'); $('mcancel').classList.remove('hide');
+  } catch { note('Microphone not available (needs permission, and HTTPS or localhost).'); }
+};
+$('mcancel').onclick = () => { if (rec) { rec.send = false; rec.mr.stop(); } };
+
+// ---------- calls (1:1, peer-to-peer WebRTC; signalling is encrypted with the private-chat key) ----------
+async function sendSig(peer, obj) {
+  const r = roster.find(x => x.name === peer);
+  if (!r || !r.pub || !ws || ws.readyState !== 1) return;
+  ws.send(JSON.stringify({ type:'sig', to: peer, ...(await seal(await dmKey(r.pub), JSON.stringify(obj))) }));
+}
+const getMedia = video => navigator.mediaDevices.getUserMedia({ audio:true, video: video ? { facingMode:'user' } : false });
+function mkPC(peer) {
+  const pc = new RTCPeerConnection({ iceServers: ice });
+  pc.onicecandidate = e => { if (e.candidate) sendSig(peer, { k:'ice', c: e.candidate.toJSON() }); };
+  pc.ontrack = e => { $('rv').srcObject = e.streams[0]; };
+  pc.onconnectionstatechange = () => {
+    if (pc.connectionState === 'connected') $('cstat').textContent = 'Connected · encrypted (DTLS-SRTP)';
+    if (pc.connectionState === 'failed') endCall(true, 'Call failed — your network may need a TURN server.');
+  };
+  return pc;
+}
+function showCall(peer, video, st) {
+  $('call').classList.remove('hide'); $('cname').textContent = peer;
+  $('lv').srcObject = video ? st : null; $('lv').classList.toggle('hide', !video); $('ccam').classList.toggle('hide', !video);
+  $('rv').classList.toggle('hide', !video);
+}
+function endCall(notify, msg) {
+  if (!call) return; const c = call; call = null; clearTimeout(c.timeout);
+  try { c.pc && c.pc.close(); } catch {}
+  if (c.stream) c.stream.getTracks().forEach(t => t.stop());
+  $('rv').srcObject = null; $('lv').srcObject = null; $('call').classList.add('hide'); $('inc').classList.add('hide');
+  if (notify) sendSig(c.peer, { k:'end' });
+  if (msg) push(c.peer, { sys:true, text:msg });
+}
+async function flushIce() { for (const c of call.ice.splice(0)) { try { await call.pc.addIceCandidate(c); } catch {} } }
+async function startCall(peer, video) {
+  if (call) return note('You are already in a call.');
+  const r = roster.find(x => x.name === peer);
+  if (!r || !r.online || !r.pub) return note(peer + ' is offline.');
+  let st; try { st = await getMedia(video); } catch { return note('Camera/microphone blocked (needs permission, and HTTPS or localhost).'); }
+  const c = call = { peer, video, stream: st, ice: [], pc: null };
+  const pc = c.pc = mkPC(peer); st.getTracks().forEach(t => pc.addTrack(t, st));
+  showCall(peer, video, st); $('cstat').textContent = 'Calling…';
+  const o = await pc.createOffer(); await pc.setLocalDescription(o);
+  sendSig(peer, { k:'offer', sdp: o.sdp, video });
+  c.timeout = setTimeout(() => { if (call === c) endCall(true, peer + " didn't answer."); }, 45000);
+}
+async function onSig(from, e) {
+  if (e.k === 'offer') {
+    if (call) return sendSig(from, { k:'busy' });
+    const c = call = { peer: from, video: !!e.video, offer: e.sdp, ice: [], incoming: true, pc: null };
+    $('inctext').textContent = from + (e.video ? ' is video calling…' : ' is calling…'); $('inc').classList.remove('hide');
+    c.timeout = setTimeout(() => { if (call === c) endCall(false); }, 45000); return;
+  }
+  if (!call || call.peer !== from) return;
+  if (e.k === 'answer' && call.pc) { clearTimeout(call.timeout); await call.pc.setRemoteDescription({ type:'answer', sdp: e.sdp }); await flushIce(); }
+  else if (e.k === 'ice') { if (call.pc && call.pc.remoteDescription) { try { await call.pc.addIceCandidate(e.c); } catch {} } else call.ice.push(e.c); }
+  else if (e.k === 'end' || e.k === 'busy') endCall(false, e.k === 'busy' ? from + ' is busy.' : 'Call ended.');
+}
+$('cacc').onclick = async () => {
+  const c = call; if (!c || !c.incoming) return; $('inc').classList.add('hide'); clearTimeout(c.timeout);
+  let st; try { st = await getMedia(c.video); } catch { sendSig(c.peer, { k:'end' }); call = null; return note('Camera/microphone blocked.'); }
+  c.stream = st; c.incoming = false; const pc = c.pc = mkPC(c.peer); st.getTracks().forEach(t => pc.addTrack(t, st));
+  showCall(c.peer, c.video, st); $('cstat').textContent = 'Connecting…';
+  await pc.setRemoteDescription({ type:'offer', sdp: c.offer }); await flushIce();
+  const a = await pc.createAnswer(); await pc.setLocalDescription(a); sendSig(c.peer, { k:'answer', sdp: a.sdp });
+};
+$('cdec').onclick = () => { if (call && call.incoming) { sendSig(call.peer, { k:'end' }); endCall(false); } };
+$('cend').onclick = () => endCall(true, 'Call ended.');
+$('cmute').onclick = () => { if (!call || !call.stream) return; call.stream.getAudioTracks().forEach(t => t.enabled = !t.enabled); };
+$('ccam').onclick = () => { if (!call || !call.stream) return; call.stream.getVideoTracks().forEach(t => t.enabled = !t.enabled); };
+$('calla').onclick = () => startCall(cur, false); $('callv').onclick = () => startCall(cur, true);
+
+// ---------- guest links (members only) & burning ----------
+let gKey = null;
+$('gl').onclick = () => { $('gd').classList.toggle('hide'); $('gerr').textContent = ''; };
+$('gmk').onclick = () => { $('gerr').textContent = ''; ws.send(JSON.stringify({ type:'mkguest', ttl: +$('gttl').value, max: +$('gmax').value })); };
+$('gcopy').onclick = () => { navigator.clipboard.writeText($('glink').value); $('gcopy').textContent = 'Copied!'; setTimeout(() => $('gcopy').textContent = 'Copy', 1500); };
+$('gopen').onclick = () => window.open($('glink').value, '_blank', 'noopener');
+$('burn').onclick = () => { if (confirm('Burn this room for everyone? All messages and files are destroyed and the link stops working.')) ws.send(JSON.stringify({ type:'burn' })); };
+function wipeAll(reason) {
+  creds = null; try { ws.onclose = null; ws.close(); } catch {}
+  endCall(false); blobUrls.forEach(u => URL.revokeObjectURL(u)); blobUrls = []; threads = { ALL: [] }; unread = {}; dmKeys.clear();
+  $('log').textContent = ''; try { sessionStorage.removeItem(SK); } catch {}
+  for (const id of ['app','login','idf','gd','gl','chg','burn','who','inc']) $(id).classList.add('hide');
+  $('bmsg').textContent = reason; $('burned').classList.remove('hide');
+}
+const BURN_MSG = { burned:'This room was burned. Every message and file is gone.', expired:'This room expired and was burned automatically.', unused:'Nobody joined in time, so the link was burned.', empty:'Everyone left, so the room was burned.' };
+
+// ---------- network ----------
+function connect() {
+  ws = new WebSocket(`${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}/ws`);
+  ws.onopen = () => ws.send(JSON.stringify(GUEST ? { type:'gjoin', room: ROOM, nick: creds.id, tok: creds.tok } : { type:'auth', id: creds.id }));
+  ws.onmessage = async ev => {
+    const d = JSON.parse(ev.data);
+    if (d.type === 'denied') { $('err').textContent = 'Invalid ID.'; ws.onclose = null; creds = null; return; }
+    if (d.type === 'gdenied') { ws.onclose = null; if (me) return wipeAll(d.reason); $('err').textContent = d.reason; creds = null; return; }
+    if (d.type === 'burned') return wipeAll(BURN_MSG[d.reason] || BURN_MSG.burned);
+    if (d.type === 'ok') {
+      me = d.name; retry = 0; ice = d.ice || []; expiresAt = d.expires || null; creds.id = GUEST ? me : creds.id;
+      try { sessionStorage.setItem(SK, $('rk').value); } catch {}
+      $('login').classList.add('hide'); $('app').classList.remove('hide');
+      $('who').textContent = me; $('who').classList.remove('hide');
+      if (GUEST) $('burn').classList.remove('hide'); else { $('chg').classList.remove('hide'); $('gl').classList.remove('hide'); }
+      ws.send(JSON.stringify({ type:'pub', pub: myPub }));
+      if (!threads.ALL.length) push('ALL', { sys:true, text:`Welcome, ${me}. Everything is encrypted in your browser.` });
+      select(cur); return;
+    }
+    if (d.type === 'replaced') { ws.onclose = null; creds = null; note('You joined from another place. This session ended.'); return; }
+    if (d.type === 'presence') {
+      roster = d.members;
+      if (call && !roster.find(r => r.name === call.peer && r.online)) endCall(false, call.peer + ' left the call.');
+      const peer = roster.find(r => r.name === cur);
+      if (cur !== 'ALL') $('tinfo').textContent = peer && peer.pub ? 'Only you and ' + cur + ' · verify code: ' + await fingerprint(myPub, peer.pub) : cur + ' is offline';
+      renderSide(); return;
+    }
+    if (d.type === 'guestroom') {
+      gKey = b64url(crypto.getRandomValues(new Uint8Array(24)));
+      $('glink').value = `${location.origin}/g/${d.id}#${gKey}`; $('gout').classList.remove('hide');
+      $('gnote').textContent = 'Anyone with this link can join (up to ' + d.max + ' people) until it burns at ' + new Date(d.expires).toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' }) + '.'; return;
+    }
+    if (d.type === 'guesterr') { $('gerr').textContent = d.reason; return; }
+    if (d.type === 'iderr') { $('iderr').textContent = d.reason; return; }
+    if (d.type === 'idok') { creds.id = $('newid').value.trim(); $('idf').classList.add('hide'); $('newid').value = ''; note('Your ID was changed. Use the new one next time you log in.'); return; }
+    if (d.type === 'offline') { push(d.to, { sys:true, text:`${d.to} is offline — not delivered.` }); return; }
+    try {
+      if (d.type === 'group') push('ALL', { from: d.from, env: JSON.parse(await open(groupKey, d)) });
+      else if (d.type === 'dm') { const r = roster.find(x => x.name === d.from); push(d.from, { from: d.from, env: JSON.parse(await open(await dmKey(r.pub), d)) }); }
+      else if (d.type === 'sig') { const r = roster.find(x => x.name === d.from); onSig(d.from, JSON.parse(await open(await dmKey(r.pub), d))); }
+    } catch { if (d.type !== 'sig') push(d.type === 'dm' ? d.from : 'ALL', { sys:true, text:'⚠ Could not decrypt a message.' }); }
+  };
+  ws.onclose = () => { if (!creds) return; note('Disconnected. Reconnecting…'); setTimeout(connect, Math.min(8000, 1000 * ++retry)); };
+}
+
+$('login').onsubmit = async e => {
+  e.preventDefault(); $('err').textContent = '';
+  const rk = $('rk').value.trim();
+  if (!rk) { $('rk').classList.remove('hide'); $('err').textContent = 'Room key missing — use the full invite link.'; return; }
+  creds = { id: $('mid').value.trim(), tok: b64url(crypto.getRandomValues(new Uint8Array(16))) };
+  groupKey = await deriveGroupKey(rk); await genPair(); connect();
+};
+$('chg').onclick = () => { $('idf').classList.toggle('hide'); $('iderr').textContent = ''; $('newid').focus(); };
+$('idf').onsubmit = e => { e.preventDefault(); $('iderr').textContent = ''; ws.send(JSON.stringify({ type:'setid', id: $('newid').value })); };
+})();
+</script>
+</body>
+</html>

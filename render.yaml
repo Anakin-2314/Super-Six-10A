@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: super-six
+    runtime: node
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: MEMBERS_JSON
+        sync: false   # paste the full text of members.json in the Render dashboard
